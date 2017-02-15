@@ -87,9 +87,51 @@ function updateRecords(id, prop, value) {
   return collection;
 }
 ```
-###Symmetric Difference Incomplete
+###Symmetric Difference 
+Create a function that takes two or more arrays and returns an array of the symmetric difference (△ or ⊕) of the provided arrays.
+Given two sets (for example set A = {1, 2, 3} and set B = {2, 3, 4}), the mathematical term "symmetric difference" of two sets is the set of elements which are in either of the two sets, but not in both (A △ B = C = {1, 4}). For every additional symmetric difference you take (say on a set D = {2, 3}), you should get the set with elements which are in either of the two the sets but not both (C △ D = {1, 4} △ {2, 3} = {1, 2, 3, 4}).
 ```javascript
-
+function sym() {
+// A condition for exiting from a recursion
+	if(!arguments[1]) {
+		return arguments[0];
+	}
+//Convert the given arguments into the array args
+	var args = Array.prototype.slice.call(arguments);
+//First find the Symmetric Difference of first two arrays 
+	var setA = args[0], setB = args[1];
+	var symDiffAB = setA.reduce(function (acc, val) {
+		var indexInSetB = setB.indexOf(val);	
+// if current value from setA is not found in setB (~x equivalent to the -(x+1) so if indexOf returns -1 i.e x = -1 ~x = -0 and !~x becomes true)
+// push this value to the acc if acc doesn't contain equal value			
+		if (!~indexInSetB) {
+			if(!~acc.indexOf(val)){
+				acc.push(val);
+			}			
+		}	
+//if current value from setA is found in setB remove it from setB	
+		else {
+// splice all elements from setB with value equal to val
+			while(~indexInSetB){			
+				setB.splice(indexInSetB, 1);
+				indexInSetB = setB.indexOf(val);
+			}
+		}		
+		return acc;
+	}, []);
+//Push the remaining values from setB to the Symmetric Difference symDiffAB	if symDiffAB doesn't contain equal value
+	for(var element of setB){
+		if(!~symDiffAB.indexOf(element)){
+			symDiffAB.push(element);
+		}
+	}
+// remove the first element from args (first array from arguments)
+	args.shift();
+// replace the first element(the second in original arguments) with the symmetric difference of two first arguments
+	args[0] = symDiffAB;
+// Recursive call the function sym with the new shorter set of arguments
+	return sym.apply(null, args);
+}
 ```
 ###Exact Change Incomplete
 ```javascript
