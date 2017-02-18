@@ -100,31 +100,36 @@ function sym() {
 	var args = Array.prototype.slice.call(arguments);
 //First find the Symmetric Difference of first two arrays 
 	var setA = args[0], setB = args[1];
-	var symDiffAB = setA.reduce(function (acc, val) {
-		var indexInSetB = setB.indexOf(val);	
+	
+//For optimization and efficiency is better to remove extra elements to make the arrays unique. But we do it only with second arrays setB
+// because of recursion call later. If the function will call recursively the first array will be always Symmetric Difference so no need to
+// change first array.
+	setB = setB.reduce(function (acc, val) {
 // if current value from setA is not found in setB (~x equivalent to the -(x+1) so if indexOf returns -1 i.e x = -1 ~x = -0 and !~x becomes true)
-// push this value to the acc if acc doesn't contain equal value			
+// push this value to the acc if acc doesn't contain equal value
+		if(!~acc.indexOf(val)){
+				acc.push(val);
+		}
+		return acc;
+	}, []);
+//Now setB contains only unique values
+
+//Go through first setA and if the value is not found in setB push it to symDiffAB and if the value is found in setB remove it from setB
+	var symDiffAB = setA.reduce(function (acc, val) {
+		var indexInSetB = setB.indexOf(val);				
 		if (!~indexInSetB) {
 			if(!~acc.indexOf(val)){
 				acc.push(val);
 			}			
 		}	
-//if current value from setA is found in setB remove it from setB	
 		else {
-// splice all elements from setB with value equal to val
-			while(~indexInSetB){			
+			if(~indexInSetB){			
 				setB.splice(indexInSetB, 1);
-				indexInSetB = setB.indexOf(val);
 			}
 		}		
 		return acc;
 	}, []);
-//Push the remaining values from setB to the Symmetric Difference symDiffAB	if symDiffAB doesn't contain equal value
-	for(var element of setB){
-		if(!~symDiffAB.indexOf(element)){
-			symDiffAB.push(element);
-		}
-	}
+	symDiffAB = symDiffAB.concat(setB);
 // remove the first element from args (first array from arguments)
 	args.shift();
 // replace the first element(the second in original arguments) with the symmetric difference of two first arguments
@@ -132,10 +137,60 @@ function sym() {
 // Recursive call the function sym with the new shorter set of arguments
 	return sym.apply(null, args);
 }
+
 ```
 ###Exact Change Incomplete
+Design a cash register drawer function checkCashRegister() that accepts purchase price as the first argument (price), payment as the second argument (cash), and cash-in-drawer (cid) as the third argument.
+cid is a 2D array listing available currency.
+Return the string "Insufficient Funds" if cash-in-drawer is less than the change due. Return the string "Closed" if cash-in-drawer is equal to the change due.
+Otherwise, return change in coin and bills, sorted in highest to lowest order.
 ```javascript
-
+function checkCashRegister(price, cash, cid) {
+//Will calculate all values in cents because of float accuracy
+	var nominals = { "PENNY": 1, "NICKEL": 5, "DIME": 10, "QUARTER": 25, "ONE": 100, "FIVE": 500, "TEN": 1000, "TWENTY": 2000, "ONE HUNDRED": 10000};
+	var change = [];
+	function findCidSumInCents(cid) {
+		var cidSumInner = 0;
+		cid.forEach(function(val) {
+			val[1] = val[1] * 100;
+			cidSumInner = cidSumInner + val[1];
+		});
+		return cidSumInner;
+	}
+	price = price * 100;
+	cash = cash * 100;
+	var changeDue = cash - price;
+	var cidSum = findCidSumInCents(cid);
+	if (changeDue > cidSum) {
+		return "Insufficient Funds";
+	}
+	else {
+		for(var i = cid.length - 1; i >= 0; i--){
+			if(changeDue > nominals[cid[i][0]] && cid[i][1] > 0 ){
+				if (changeDue  <= cid[i][1]) {
+					let givenNominal = Math.floor(changeDue / nominals[cid[i][0]]) * nominals[cid[i][0]];
+					changeDue = changeDue - givenNominal;
+					cid[i][1] = cid[i][1] - givenNominal;
+					change.push([cid[i][0], givenNominal / 100]); 
+				}
+				else {
+					changeDue = changeDue - cid[i][1];
+					change.push([cid[i][0], cid[i][1] / 100]);
+					cid[i][1] = 0;
+				}
+			}
+		}
+		if (changeDue > 0) {
+			return "Insufficient Funds";
+		}
+		else if (findCidSumInCents(cid) == 0) {
+			return "Closed";
+			}
+			else {
+				return change;
+			}
+	}
+}
 ```
 ###Inventory Update Incomplete
 ```javascript
