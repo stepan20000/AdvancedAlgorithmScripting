@@ -139,7 +139,7 @@ function sym() {
 }
 
 ```
-###Exact Change Incomplete
+###Exact Change
 Design a cash register drawer function checkCashRegister() that accepts purchase price as the first argument (price), payment as the second argument (cash), and cash-in-drawer (cid) as the third argument.
 cid is a 2D array listing available currency.
 Return the string "Insufficient Funds" if cash-in-drawer is less than the change due. Return the string "Closed" if cash-in-drawer is equal to the change due.
@@ -192,11 +192,36 @@ function checkCashRegister(price, cash, cid) {
 	}
 }
 ```
-###Inventory Update Incomplete
+###Inventory Update 
+Compare and update the inventory stored in a 2D array against a second 2D array of a fresh delivery. Update the current existing inventory item quantities (in arr1). If an item cannot be found, add the new item and quantity into the inventory array. The returned inventory array should be in alphabetical order by item.
 ```javascript
-
+function updateInventory(arr1, arr2) {
+	var found;
+    for(var i = 0, n = arr2.length; i < n; i++){
+    	found = false;
+    	for(var j = 0, m = arr1.length; j < m; j++) {
+  			if (arr1[j][1] < arr2[i][1]) {
+  				continue;
+  			}
+  			else if (arr1[j][1] == arr2[i][1]) {
+  				found = true;
+                arr1[j][0] += arr2[i][0];
+  				break;
+  			}
+  			else {
+  				break;
+  			}	  
+    	}
+    	if(!found) {
+    		arr1.splice(j, 0, arr2[i]);
+    	}
+    }
+    return arr1;
+}
 ```
-###No repeats please Incomplete
+###No repeats please
+Return the number of total permutations of the provided string that don't have repeated consecutive letters. Assume that all characters in the provided string are each unique.
+For example, aab should return 2 because it has 6 total permutations (aab, aab, aba, aba, baa, baa), but only 2 of them (aba and aba) don't have the same letter (in this case a) repeating.
 ```javascript
 
 ```
