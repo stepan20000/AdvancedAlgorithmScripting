@@ -223,7 +223,48 @@ function updateInventory(arr1, arr2) {
 Return the number of total permutations of the provided string that don't have repeated consecutive letters. Assume that all characters in the provided string are each unique.
 For example, aab should return 2 because it has 6 total permutations (aab, aab, aba, aba, baa, baa), but only 2 of them (aba and aba) don't have the same letter (in this case a) repeating.
 ```javascript
-
+function permAlone(str){
+// Create a regex to match repeated consecutive characters.
+	var re = /(.)\1+/g;
+// Split the string into an array of characters.
+  	var arr = str.split('');
+	var count = 0;
+// function for swapping two elements of an array
+	function swap(index1, index2, arr){
+		var temp = arr[index2];
+		arr[index2] = arr[index1];
+		arr[index1] = temp;	
+	}
+// function for creating all permutation according to the Heap's algorithm
+	function heap(n, arr) {
+		for(var i = 0; ; i++){
+			if (n > 2) {
+				heap(n-1, arr);
+			}
+			if(i == n - 1){
+				break;
+			}
+			if (n % 2 == 0) {                        
+				swap(i, n -1, arr);
+				if (!arr.join("").match(re)) {
+					count++;
+				}
+			}
+			else {
+				swap(0, n - 1, arr);
+				if (!arr.join("").match(re)) {
+					count++;
+				}
+			}
+		}
+	}
+//First checking for repeating letters given string 
+	if (!str.match(re)) {
+		count++;
+	}
+	heap(arr.length, arr);
+	return count;
+}
 ```
 ###Friendly Date Ranges Incomplete
 ```javascript
