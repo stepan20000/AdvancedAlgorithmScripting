@@ -266,13 +266,123 @@ function permAlone(str){
 	return count;
 }
 ```
-###Friendly Date Ranges Incomplete
+###Friendly Date Ranges 
+Convert a date range consisting of two dates formatted as YYYY-MM-DD into a more readable format.
+The friendly display should use month names instead of numbers and ordinal dates instead of cardinal (1st instead of 1).
+Do not display information that is redundant or that can be inferred by the user: if the date range ends in less than a year from when it begins, do not display the ending year.
+Additionally, if the date range begins in the current year (i.e. it is currently the year 2016) and ends within one year, the year should not be displayed at the beginning of the friendly range.
+If the range ends in the same month that it begins, do not display the ending year or month.
+Examples:
+makeFriendlyDates(["2016-07-01", "2016-07-04"]) should return ["July 1st","4th"]
+makeFriendlyDates(["2016-07-01", "2018-07-04"]) should return ["July 1st, 2016", "July 4th, 2018"].
 ```javascript
-
+function makeFriendlyDates(arr) {
+	function addMonth(line) {
+		var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+		reply[line] = reply[line].concat(months[initial[line].getMonth()] + " ");
+	}
+	function addDate(line) {
+		if (initial[line].getDate() % 10 == 1)  {
+			reply[line] = reply[line].concat(initial[line].getDate() + "st");
+		}
+		else if(initial[line].getDate() % 10 == 2) {
+			reply[line] = reply[line].concat(initial[line].getDate() + "nd");
+		}
+		else if(initial[line].getDate()  == 3 || initial[line].getDate()  == 23){
+			reply[line] = reply[line].concat(initial[line].getDate() + "rd");
+		}
+		else {
+			reply[line] = reply[line].concat(initial[line].getDate() + "th");
+		}
+	}
+	function addYear(line) {
+		reply[line] = reply[line].concat(", " + initial[line].getFullYear());
+	}
+	
+	var reply = ["", ""];
+	var today = 2016 /* replace 2016 with new Date(). 2016 is because of the current year on FreeCoreCamp task verifier was 2016 */;
+	var start = 0, finish = 1;
+	var initial = [new Date(arr[0]), new Date(arr[1])];
+	var milSecInYear = 365 * 24 * 60 * 60 * 1000;  
+	
+	addMonth(start);
+	addDate(start);
+	if (initial[start].valueOf() == initial[finish].valueOf()) {
+		addYear(start);
+		reply.pop();
+		return reply;
+	} 
+	if (initial[finish] - initial[start] < milSecInYear){
+		if (initial[start].getFullYear() == today) {
+			if (initial[start].getMonth() == initial[finish].getMonth()) {
+				addDate(finish);
+				
+			}
+			else {
+				addMonth(finish);
+				addDate(finish);
+			}		
+		}
+		else {
+			addYear(start);
+			addMonth(finish);
+			addDate(finish);
+			
+		}
+	}
+	else {
+		addYear(start);
+		addMonth(finish);
+		addDate(finish);
+		addYear(finish);
+	}
+  	return reply;
+}
 ```
-###Make a Person Incomplete
-```javascript
+###Make a Person 
+Fill in the object constructor with the following methods below:
 
+    getFirstName()
+    getLastName()
+    getFullName()
+    setFirstName(first)
+    setLastName(last)
+    setFullName(firstAndLast)
+
+Run the tests to see the expected output for each method.
+The methods that take an argument must accept only one argument and it has to be a string.
+These methods must be the only available means of interacting with the object.
+```javascript
+var Person = function(firstAndLast) {
+    var re = /([A-Za-z]+)/g;
+    
+    this.getFirstName = function() {
+		return firstAndLast.match(re)[0];
+    };
+    this.getLastName = function() {
+		return firstAndLast.match(re)[1];  
+    };
+    this.getFullName = function() {
+		return  this.getFirstName() + " " + this.getLastName();   
+    };
+    this.setFirstName = function(first) {
+		this.getFirstName = function (){
+			return first;
+        };    
+    };
+    this.setLastName = function(last) {
+		this.getLastName = function(){
+			return last;
+        };    
+    };
+    this.setFullName = function(firstAndLast) {
+      let first = firstAndLast.match(re)[0];
+      let last = firstAndLast.match(re)[1];
+      this.setFirstName(first);
+      this.setLastName(last);
+    };
+
+};
 ```
 ###Map the Debris Incomplete
 ```javascript
